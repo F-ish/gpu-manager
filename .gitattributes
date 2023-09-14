@@ -1,0 +1,6 @@
+relateYamlFile/gpu-admission.yaml text eol=lf
+relateYamlFile/gpuDeploy.sh text eol=lf
+relateYamlFile/gpu-manager.yaml text eol=lf
+relateYamlFile/scheduler-extender.yaml text eol=lf
+relateYamlFile/scheduler-policy-config.json text eol=lf
+* text eol=lf
