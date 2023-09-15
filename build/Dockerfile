@@ -15,6 +15,8 @@ RUN curl -sSL https://dl.google.com/go/go${GOLANG_VERSION}.linux-amd64.tar.gz \
     | tar -C /usr/local -xz
 ENV GOPATH /go
 ENV PATH $GOPATH/bin:/usr/local/go/bin:$PATH
+ENV GO111MODULE on
+ENV GOPROXY https://goproxy.cn,direct
 
 RUN mkdir -p /root/rpmbuild/{SPECS,SOURCES}
 
