@@ -37,18 +37,18 @@ import (
 
 // #lizard forgives
 func Run(opt *options.Options) error {
-	cfg := &config.Config{
+	cfg := &config.Config{ //用option结构体初始化config结构体
 		Driver:                   opt.Driver,
 		QueryPort:                opt.QueryPort,
 		QueryAddr:                opt.QueryAddr,
 		KubeConfig:               opt.KubeConfigFile,
-		SamplePeriod:             time.Duration(opt.SamplePeriod) * time.Second,
-		VCudaRequestsQueue:       make(chan *types.VCudaRequest, 10),
-		DevicePluginPath:         pluginapi.DevicePluginPath,
+		SamplePeriod:             time.Duration(opt.SamplePeriod) * time.Second,			//
+		VCudaRequestsQueue:       make(chan *types.VCudaRequest, 10),           			//
+		DevicePluginPath:         pluginapi.DevicePluginPath,                    			//
 		VirtualManagerPath:       opt.VirtualManagerPath,
 		VolumeConfigPath:         opt.VolumeConfigPath,
 		EnableShare:              opt.EnableShare,
-		AllocationCheckPeriod:    time.Duration(opt.AllocationCheckPeriod) * time.Second,
+		AllocationCheckPeriod:    time.Duration(opt.AllocationCheckPeriod) * time.Second,   //
 		CheckpointPath:           opt.CheckpointPath,
 		ContainerRuntimeEndpoint: opt.ContainerRuntimeEndpoint,
 		CgroupDriver:             opt.CgroupDriver,
@@ -70,16 +70,16 @@ func Run(opt *options.Options) error {
 	cfg.NodeLabels = make(map[string]string)
 	for _, item := range strings.Split(opt.NodeLabels, ",") {
 		if len(item) > 0 {
-			kvs := strings.SplitN(item, "=", 2)
+			kvs := strings.SplitN(item, "=", 2) //以等号拆分字符串，存储到kvs切片中[]string
 			if len(kvs) == 2 {
-				cfg.NodeLabels[kvs[0]] = kvs[1]
+				cfg.NodeLabels[kvs[0]] = kvs[1] //map键值对
 			} else {
 				klog.Warningf("malformed node labels: %v", kvs)
 			}
 		}
 	}
 
-	srv := server.NewManager(cfg)
+	srv := server.NewManager(cfg) //用cfg构造了managerImpl结构体，该结构体还有grpc.NewServer()这中内容和一些定义的函数
 	go srv.Run()
 
 	waitTimer := time.NewTimer(opt.WaitTimeout)

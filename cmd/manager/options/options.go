@@ -75,7 +75,7 @@ func NewOptions() *Options {
 
 // AddFlags add some commandline flags.
 func (opt *Options) AddFlags(fs *pflag.FlagSet) {
-	fs.StringVar(&opt.Driver, "driver", opt.Driver, "The driver name for manager")
+	fs.StringVar(&opt.Driver, "driver", opt.Driver, "The driver name for manager") //将标志与变量绑定(变量，标志，默认值，说明)
 	fs.StringVar(&opt.ExtraPath, "extra-config", opt.ExtraPath, "The extra config file location")
 	fs.StringVar(&opt.VolumeConfigPath, "volume-config", opt.VolumeConfigPath, "The volume config file location")
 	fs.IntVar(&opt.QueryPort, "query-port", opt.QueryPort, "port for query statistics information")

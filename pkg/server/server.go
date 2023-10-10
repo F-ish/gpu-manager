@@ -101,30 +101,30 @@ func (m *managerImpl) Ready() bool {
 
 // #lizard forgives
 func (m *managerImpl) Run() error {
-	if err := m.validExtraConfig(m.config.ExtraConfigPath); err != nil {
+	if err := m.validExtraConfig(m.config.ExtraConfigPath); err != nil {  //读取一个额外配置路径，存在就把配置信息加到cfg中
 		klog.Errorf("Can not load extra config, err %s", err)
 
 		return err
 	}
 
-	if m.config.Driver == "" {
+	if m.config.Driver == "" {  //默认值是nvidia
 		return fmt.Errorf("you should define a driver")
 	}
 
-	if len(m.config.VolumeConfigPath) > 0 {
-		volumeManager, err := volume.NewVolumeManager(m.config.VolumeConfigPath, m.config.EnableShare)
+	if len(m.config.VolumeConfigPath) > 0 {  //无默认值，从哪来的？通过EXTRA_FLAG传进来的？
+		volumeManager, err := volume.NewVolumeManager(m.config.VolumeConfigPath, m.config.EnableShare)  //又建个结构体，有cudasoname和mlsoname啥的，同样的将路径下的文件配置加入结构体中
 		if err != nil {
 			klog.Errorf("Can not create volume managerImpl, err %s", err)
 			return err
 		}
 
-		if err := volumeManager.Run(); err != nil {
+		if err := volumeManager.Run(); err != nil {  //有点复杂
 			klog.Errorf("Can not start volume managerImpl, err %s", err)
 			return err
 		}
 	}
 
-	sent, err := systemd.SdNotify(true, "READY=1\n")
+	sent, err := systemd.SdNotify(true, "READY=1\n") //函数用于向 systemd 发送通知消息，告知服务已准备好
 	if err != nil {
 		klog.Errorf("Unable to send systemd daemon successful start message: %v\n", err)
 	}
@@ -138,16 +138,16 @@ func (m *managerImpl) Run() error {
 		clientCfg *rest.Config
 	)
 
-	clientCfg, err = clientcmd.BuildConfigFromFlags("", m.config.KubeConfig)
+	clientCfg, err = clientcmd.BuildConfigFromFlags("", m.config.KubeConfig) //据指定的 kubeconfig 文件路径创建kubernetes客户端配置。
 	if err != nil {
 		return fmt.Errorf("invalid client config: err(%v)", err)
 	}
 
-	client, err = kubernetes.NewForConfig(clientCfg)
+	client, err = kubernetes.NewForConfig(clientCfg) //根据配置信息创建 Kubernetes 客户端实例。这个客户端用于与 Kubernetes 集群进行通信。
 	if err != nil {
 		return fmt.Errorf("can not generate client from config: error(%v)", err)
 	}
-
+	/*创建grpc客户端与grpc服务器通信（默认是/var/run/dockershim.sock），调用了一个远程服务方法，获取容器运行时的版本信息，并记录该信息*/
 	containerRuntimeManager, err := containerRuntime.NewContainerRuntimeManager(
 		m.config.CgroupDriver, m.config.ContainerRuntimeEndpoint, m.config.RequestTimeout)
 	if err != nil {
@@ -156,7 +156,7 @@ func (m *managerImpl) Run() error {
 	}
 	klog.V(2).Infof("Container runtime manager is running")
 
-	watchdog.NewPodCache(client, m.config.Hostname)
+	watchdog.NewPodCache(client, m.config.Hostname) //设置了一个 Informer 来监听指定主机名上的 Pod
 	klog.V(2).Infof("Watchdog is running")
 
 	labeler := watchdog.NewNodeLabeler(client.CoreV1(), m.config.Hostname, m.config.NodeLabels)

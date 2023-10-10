@@ -35,8 +35,8 @@ import (
 
 func main() {
 	klog.InitFlags(nil)
-	opt := options.NewOptions()
-	opt.AddFlags(pflag.CommandLine)
+	opt := options.NewOptions()     //新建options对象，包含插件信息
+	opt.AddFlags(pflag.CommandLine) //实现在gpu-manager.yaml文件添加EXTRA_FLAGS修改对应变量值
 
 	flags.InitFlags()
 	goflag.CommandLine.Parse([]string{})

@@ -84,7 +84,7 @@ func NewVolumeManager(config string, share bool) (*VolumeManager, error) {
 	defer f.Close()
 
 	volumeManager := &VolumeManager{
-		cfgPath:    filepath.Dir(config),
+		cfgPath:    filepath.Dir(config),  //函数返回一个字符串，表示文件路径中的目录部分，而不包括文件名
 		cudaSoname: make(map[string]string),
 		mlSoName:   make(map[string]string),
 		share:      share,
@@ -99,11 +99,11 @@ func NewVolumeManager(config string, share bool) (*VolumeManager, error) {
 
 //Run starts a VolumeManager
 func (vm *VolumeManager) Run() (err error) {
-	cache, err := ldcache.Open()
+	cache, err := ldcache.Open()  //将/etc/ld.so.cache文件映射到内存中，同时将包含映射到内存的文件数据的切片初始化到cache结构体中
 	if err != nil {
 		return err
 	}
-
+	//调用 syscall.Munmap 函数来释放映射的内存，以防止内存泄漏
 	defer func() {
 		if e := cache.Close(); err == nil {
 			err = e
